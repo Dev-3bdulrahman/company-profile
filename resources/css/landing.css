@@ -1,0 +1,181 @@
+/* Apex Courts Design System - Premium Landing Page CSS */
+
+:root {
+    --radius: 0.75rem;
+
+    /* Default Light Mode Palette */
+    --landing-background: oklch(0.98 0.01 240);
+    --landing-foreground: oklch(0.20 0.02 240);
+
+    --landing-surface: oklch(1 0 0);
+    --landing-surface-elevated: oklch(0.96 0.01 240);
+
+    --landing-card: oklch(1 0 0);
+    --landing-card-foreground: oklch(0.20 0.02 240);
+
+    --landing-popover: oklch(1 0 0);
+    --landing-popover-foreground: oklch(0.20 0.02 240);
+
+    /* Primary — brand lime (#b3da2d) remains consistent */
+    --landing-primary: #7eb834;
+    --landing-primary-foreground: oklch(0.16 0.02 240);
+
+    /* Secondary — muted slate */
+    --landing-secondary: oklch(0.92 0.01 240);
+    --landing-secondary-foreground: oklch(0.20 0.02 240);
+
+    --landing-muted: oklch(0.94 0.01 240);
+    --landing-muted-foreground: oklch(0.45 0.02 240);
+
+    /* Accent — warm gold */
+    --landing-accent: oklch(0.78 0.14 80);
+    --landing-accent-foreground: oklch(0.16 0.02 240);
+
+    --landing-border: oklch(0.88 0.01 240);
+    --landing-input: oklch(0.96 0.01 240);
+    --landing-ring: #b3da2d;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, oklch(0.98 0.01 240 / 0.95) 0%, oklch(0.98 0.01 240 / 0.7) 50%, oklch(0.98 0.01 240 / 0.4) 100%);
+    --gradient-primary: linear-gradient(135deg, #b3da2d 0%, #98c01a 100%);
+    --gradient-accent: linear-gradient(135deg, oklch(0.78 0.14 80) 0%, oklch(0.70 0.16 60) 100%);
+    --gradient-surface: linear-gradient(180deg, oklch(1 0 0) 0%, oklch(0.98 0.01 240) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 0%, #b3da2d15 0%, transparent 60%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.1);
+    --shadow-md: 0 4px 12px oklch(0 0 0 / 0.08);
+    --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.1);
+    --shadow-glow: 0 0 30px #b3da2d20;
+    --shadow-glow-accent: 0 0 24px oklch(0.78 0.14 80 / 0.15);
+}
+
+.dark {
+    /* Dark Mode Palette — deep midnight with electric lime */
+    --landing-background: oklch(0.16 0.02 240);
+    --landing-foreground: oklch(0.97 0.01 240);
+
+    --landing-surface: oklch(0.20 0.025 240);
+    --landing-surface-elevated: oklch(0.24 0.03 240);
+
+    --landing-card: oklch(0.20 0.025 240);
+    --landing-card-foreground: oklch(0.97 0.01 240);
+
+    --landing-popover: oklch(0.20 0.025 240);
+    --landing-popover-foreground: oklch(0.97 0.01 240);
+
+    --landing-secondary: oklch(0.28 0.03 240);
+    --landing-secondary-foreground: oklch(0.97 0.01 240);
+
+    --landing-muted: oklch(0.24 0.03 240);
+    --landing-muted-foreground: oklch(0.70 0.02 240);
+
+    --landing-border: oklch(0.30 0.025 240);
+    --landing-input: oklch(0.28 0.03 240);
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, oklch(0.16 0.02 240 / 0.95) 0%, oklch(0.16 0.02 240 / 0.7) 50%, oklch(0.16 0.02 240 / 0.4) 100%);
+    --gradient-surface: linear-gradient(180deg, oklch(0.20 0.025 240) 0%, oklch(0.16 0.02 240) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 0%, #b3da2d26 0%, transparent 60%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px oklch(0 0 0 / 0.3);
+    --shadow-md: 0 8px 24px oklch(0 0 0 / 0.4);
+    --shadow-lg: 0 16px 48px oklch(0 0 0 / 0.5);
+    --shadow-glow: 0 0 40px #b3da2d40;
+    --shadow-glow-accent: 0 0 32px oklch(0.78 0.14 80 / 0.3);
+}
+
+.landing-page-body {
+    background-color: var(--landing-background) !important;
+    color: var(--landing-foreground) !important;
+    background-image: var(--gradient-glow) !important;
+    background-attachment: fixed !important;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    padding: 0.15em 0;
+    line-height: 1.2;
+}
+
+.glow-primary {
+    box-shadow: var(--shadow-glow);
+}
+
+.glow-accent {
+    box-shadow: var(--shadow-glow-accent);
+}
+
+.surface-card {
+    background: var(--landing-card);
+    border: 1px solid var(--landing-border);
+    transition: background-color 0.5s ease, border-color 0.5s ease;
+}
+
+.grid-pattern {
+    background-image:
+        linear-gradient(var(--landing-primary) 0.05, transparent 1px),
+        linear-gradient(90deg, var(--landing-primary) 0.05, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.1;
+}
+
+.dark .grid-pattern {
+    opacity: 0.05;
+}
+
+/* Custom transitions and animations */
+.transition-smooth {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Override standard tailwind classes for landing page to match Oklch palette */
+.landing-page-body .text-primary {
+    color: var(--landing-primary) !important;
+}
+
+.landing-page-body .bg-primary {
+    background-color: var(--landing-primary) !important;
+}
+
+.landing-page-body .border-primary {
+    border-color: var(--landing-primary) !important;
+}
+
+.landing-page-body .bg-primary\/10 {
+    background-color: color-mix(in srgb, var(--landing-primary), transparent 90%) !important;
+}
+
+.landing-page-body .border-primary\/20 {
+    border-color: color-mix(in srgb, var(--landing-primary), transparent 80%) !important;
+}
+
+.landing-page-body .text-muted-foreground {
+    color: var(--landing-muted-foreground) !important;
+}
+
+.landing-page-body .bg-background {
+    background-color: var(--landing-background) !important;
+}
+
+.landing-page-body .bg-surface\/10 {
+    background-color: color-mix(in srgb, var(--landing-surface), transparent 90%) !important;
+}
+
+.landing-page-body .bg-surface\/50 {
+    background-color: color-mix(in srgb, var(--landing-surface), transparent 50%) !important;
+}
+
+.landing-page-body .border-border {
+    border-color: var(--landing-border) !important;
+}
+
+.landing-page-body .text-foreground {
+    color: var(--landing-foreground) !important;
+}

@@ -1,0 +1,63 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (will be installed during build)
+node_modules
+# Keep composer files for dependency installation
+!composer.json
+!composer.lock
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# IDE files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Documentation
+README.md
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Development files
+docker-compose.yml
+sail
+.editorconfig
+.styleci.yml
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache
+storage/framework/cache/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+.phpunit.cache
+
+# Temporary files
+tmp
+temp

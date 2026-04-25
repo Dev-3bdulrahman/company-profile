@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  new-3bdulrahman:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: new-3bdulrahman:latest
+    container_name: new-3bdulrahman
+    restart: always
+    networks:
+      - coolify
+    expose:
+      - "3000"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=http://127.0.0.1:8000
+      - ASSET_URL=http://127.0.0.1:8000
+      - FORCE_HTTPS=true
+
+networks:
+  coolify:
+    external: true
