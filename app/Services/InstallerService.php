@@ -110,13 +110,31 @@ class InstallerService
         $allPassed = true;
 
         foreach ($paths as $key => $path) {
-            $isWritable = File::exists($path) && File::isWritable($path);
+            $exists = File::exists($path);
+            $isWritable = $exists && File::isWritable($path);
+            
+            $passed = $isWritable;
+            $note = null;
+
+            // Special handling for .env in Docker/Coolify
+            if ($key === 'env') {
+                // If APP_KEY is already set in the environment, we don't strictly need the .env file
+                if (env('APP_KEY') && env('APP_KEY') !== 'base64:...') {
+                    $passed = true;
+                    $note = __('Handled by System');
+                }
+            }
+
             $permissions[$key] = [
                 'name' => $key,
                 'path' => $path,
-                'passed' => $isWritable,
+                'passed' => $passed,
+                'note' => $note,
             ];
-            if (!$isWritable) $allPassed = false;
+
+            if (!$passed && $key !== 'env') {
+                $allPassed = false;
+            }
         }
 
         return [

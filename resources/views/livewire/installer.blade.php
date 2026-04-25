@@ -106,9 +106,14 @@
                                 <p class="text-sm font-semibold text-white/80">{{ __($perm['name']) }}</p>
                                 <p class="text-[10px] font-mono text-white/25 mt-0.5">{{ $perm['path'] }}</p>
                             </div>
-                            <span @class(['text-[10px] font-bold px-2 py-0.5 rounded-full', 'badge-pass' => $perm['passed'], 'badge-fail' => !$perm['passed']])>
-                                {{ $perm['passed'] ? __('OK') : __('FAIL') }}
-                            </span>
+                            <div class="flex items-center gap-3">
+                                @if(isset($perm['note']) && $perm['note'])
+                                    <span class="text-[10px] font-bold text-indigo-400/60 uppercase">{{ $perm['note'] }}</span>
+                                @endif
+                                <span @class(['text-[10px] font-bold px-2 py-0.5 rounded-full', 'badge-pass' => $perm['passed'], 'badge-fail' => !$perm['passed']])>
+                                    {{ $perm['passed'] ? __('OK') : __('FAIL') }}
+                                </span>
+                            </div>
                         </div>
                         @endforeach
                     </div>
