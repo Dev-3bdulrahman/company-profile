@@ -1,12 +1,12 @@
 version: '3.8'
 
 services:
-  new-3bdulrahman:
+  company-profile:
     build:
       context: .
       dockerfile: Dockerfile
-    image: new-3bdulrahman:latest
-    container_name: new-3bdulrahman
+    image: company-profile:latest
+    container_name: company-profile
     restart: always
     networks:
       - coolify
@@ -15,8 +15,8 @@ services:
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=http://127.0.0.1:8000
-      - ASSET_URL=http://127.0.0.1:8000
+      - APP_URL=https://company-profile.3bdulrahman.com
+      - ASSET_URL=https://company-profile.3bdulrahman.com
       - FORCE_HTTPS=true
 
 networks:
