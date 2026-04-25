@@ -39,7 +39,7 @@ class SettingService
             ],
             'seo_keywords' => ['ar' => 'تركيب ملاعب بادل, بناء ملاعب كرة قدم, أرضيات رياضية', 'en' => 'Padel court construction, football field installation, sports flooring'],
             'dark_mode_supported' => true,
-            'default_theme' => 'light',
+            'default_theme' => 'dark',
             'show_theme_toggle' => true,
             'pdf_show_background' => true,
             'pdf_show_company_signature' => true,
