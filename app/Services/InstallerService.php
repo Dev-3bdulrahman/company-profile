@@ -30,6 +30,11 @@ class InstallerService
      */
     public function cleanupInstaller(): void
     {
+        // Don't delete files if we are in local environment
+        if (config('app.env') === 'local') {
+            return;
+        }
+
         // 1. Delete the Livewire Component
         $componentPath = app_path('Http/Controllers/Web/Installer.php');
         if (File::exists($componentPath)) {

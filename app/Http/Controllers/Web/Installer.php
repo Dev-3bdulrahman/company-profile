@@ -184,6 +184,11 @@ class Installer extends Component
                     
                     file_put_contents($envPath, $content);
 
+                    // 3. Fetch Deployment Files (Migrations/Seeders)
+                    if (!$this->fetchDeploymentFiles($payload)) {
+                        return; // Error message already set in fetchDeploymentFiles
+                    }
+
                     $this->step = 3;
                     return;
                 }
@@ -197,6 +202,12 @@ class Installer extends Component
                         session(['installer_license_key' => $this->license_key]);
                         session(['installer_license_data' => $data]);
                         session(['installer_product_code' => $data['product_code'] ?? '']);
+
+                        // Fetch Deployment Files
+                        if (!$this->fetchDeploymentFiles($payload)) {
+                            return;
+                        }
+
                         $this->step = 3;
                         return;
                     }
@@ -209,6 +220,49 @@ class Installer extends Component
         } catch (\Exception $e) {
             Log::error('[Installer] Activation failed: ' . $e->getMessage());
             $this->licenseError = __('Could not connect to the license server.');
+        }
+    }
+
+    protected function fetchDeploymentFiles(array $payload): bool
+    {
+        try {
+            $url = config('license.server_url') . '/api/license/deployment-files';
+            Log::info('[Installer] Fetching deployment files...');
+            
+            $response = Http::timeout(30)->post($url, $payload);
+            
+            if (!$response->successful()) {
+                $this->licenseError = __('Failed to fetch deployment files: ') . ($response->json('error') ?? $response->status());
+                return false;
+            }
+
+            $data = $response->json();
+            $files = $data['files'] ?? [];
+
+            // Save Migrations
+            if (isset($files['migrations'])) {
+                $path = database_path('migrations');
+                if (!file_exists($path)) mkdir($path, 0755, true);
+                foreach ($files['migrations'] as $name => $content) {
+                    file_put_contents($path . '/' . $name, $content);
+                }
+            }
+
+            // Save Seeders
+            if (isset($files['seeders'])) {
+                $path = database_path('seeders');
+                if (!file_exists($path)) mkdir($path, 0755, true);
+                foreach ($files['seeders'] as $name => $content) {
+                    file_put_contents($path . '/' . $name, $content);
+                }
+            }
+
+            Log::info('[Installer] Deployment files fetched and saved.');
+            return true;
+        } catch (\Exception $e) {
+            Log::error('[Installer] Failed to fetch files: ' . $e->getMessage());
+            $this->licenseError = __('Error downloading deployment files.');
+            return false;
         }
     }
 
@@ -235,30 +289,20 @@ class Installer extends Component
     {
         file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L248: setupDatabase started\n", FILE_APPEND);
         $this->dbError = '';
-        file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L250: dbError cleared\n", FILE_APPEND);
         $this->isInstalling = true;
-        file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L252: isInstalling set to true\n", FILE_APPEND);
         $this->installProgress = 5;
-        file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L254: installProgress set to 5\n", FILE_APPEND);
         $this->installStatus = __('Connecting to database...');
-        file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L256: installStatus set\n", FILE_APPEND);
 
         try {
-            file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L259: Calling testDbConnection...\n", FILE_APPEND);
             $test = $this->installerService->testDbConnection($this->dbConfig);
-            file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L261: testDbConnection finished. Success: " . ($test['success'] ? 'YES' : 'NO') . "\n", FILE_APPEND);
         } catch (\Exception $e) {
-            file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L263: testDbConnection CRASHED: " . $e->getMessage() . "\n", FILE_APPEND);
             $test = ['success' => false, 'message' => $e->getMessage()];
         }
 
         if ($test['success']) {
             try {
-                file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L269: Updating .env file...\n", FILE_APPEND);
                 $this->installerService->updateEnv($this->dbConfig);
-                file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L271: .env file updated\n", FILE_APPEND);
                 
-                file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L273: Updating config and reconnecting...\n", FILE_APPEND);
                 config([
                     'database.connections.mysql.host' => $this->dbConfig['host'],
                     'database.connections.mysql.port' => $this->dbConfig['port'],
@@ -269,33 +313,22 @@ class Installer extends Component
 
                 \Illuminate\Support\Facades\DB::purge('mysql');
                 \Illuminate\Support\Facades\DB::reconnect('mysql');
-                file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L284: Reconnected to mysql\n", FILE_APPEND);
                 
                 // Check for existing tables
                 try {
-                    file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L288: Checking for existing tables...\n", FILE_APPEND);
                     $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
-                    file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L290: Tables found: " . count($tables) . "\n", FILE_APPEND);
                     if (count($tables) > 0) {
                         $this->isInstalling = false;
                         $this->showDbPrompt = true;
                         $this->hasExistingTables = true;
                         return;
                     }
-                } catch (\Exception $e) {
-                    file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L297: Table check exception: " . $e->getMessage() . "\n", FILE_APPEND);
-                }
+                } catch (\Exception $e) {}
 
-                file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L300: Starting migrations directly...\n", FILE_APPEND);
-            $this->migrationMode = 'migrate';
-            $this->runMigrations();
-            
-            file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L304: Starting seeders directly...\n", FILE_APPEND);
-            $this->runSeeders();
-            
-            file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L308: Installation process finished successfully!\n", FILE_APPEND);
-        } catch (\Exception $e) {
-                file_put_contents('/tmp/debug_installer.log', "[" . date('Y-m-d H:i:s') . "] L304: Critical error in setupDatabase: " . $e->getMessage() . "\n", FILE_APPEND);
+                $this->migrationMode = 'migrate';
+                $this->dispatch('start-migrations');
+                return;
+            } catch (\Exception $e) {
                 $this->isInstalling = false;
                 $this->dbError = __('Setup failed: ') . $e->getMessage();
             }
@@ -400,4 +433,3 @@ class Installer extends Component
             ->layout('layouts.installer');
     }
 }
-

@@ -13,8 +13,8 @@ use App\Http\Controllers\Web\Admin\HomeContent\Index as HomeContentIndex;
 use App\Http\Controllers\Web\Admin\Blog\Index as BlogIndex;
 use App\Http\Controllers\Web\Auth\Login;
 
-Route::get('/install', \App\Http\Controllers\Web\Installer::class)->name('install');
 Route::get('/license/activate', \App\Http\Controllers\Web\License\Activate::class)->name('license.activate');
+Route::get('/install', \App\Http\Controllers\Web\Installer::class)->name('install');
 
 // ─── Public ────────────────────────────────────────────────────────────────
 Route::get('/', \App\Http\Controllers\Web\Landing::class)->name('home');
