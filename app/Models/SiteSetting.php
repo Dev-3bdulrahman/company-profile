@@ -14,8 +14,12 @@ class SiteSetting extends Model
 
     public static function getValue(string $key, $default = null)
     {
-        $setting = self::where('key', $key)->first();
-        if (!$setting) return $default;
+        try {
+            $setting = self::where('key', $key)->first();
+            if (!$setting) return $default;
+        } catch (\Exception $e) {
+            return $default;
+        }
 
         $value = $setting->value;
         if (is_array($value)) {

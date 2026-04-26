@@ -219,7 +219,7 @@ class Installer extends Component
             $this->licenseError = $response->json('error.message') ?? __('License not valid.');
         } catch (\Exception $e) {
             Log::error('[Installer] Activation failed: ' . $e->getMessage());
-            $this->licenseError = __('Could not connect to the license server.');
+            $this->licenseError = __('Activation error: ') . $e->getMessage();
         }
     }
 
