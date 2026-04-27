@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   company-profile:
     build:
@@ -15,8 +13,6 @@ services:
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=https://company-profile.3bdulrahman.com
-      - ASSET_URL=https://company-profile.3bdulrahman.com
       - FORCE_HTTPS=true
 
 networks:
