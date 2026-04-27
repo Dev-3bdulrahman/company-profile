@@ -83,10 +83,11 @@ class ContactService extends BaseInternalService
         $siteName = SiteSetting::getValue('site_name', config('app.name'));
         $locale   = app()->getLocale();
 
-        $logoSetting = SiteSetting::where('key', 'logo_light')->first();
-        $logoUrl = $logoSetting?->value
-            ? asset('storage/' . (is_array($logoSetting->value) ? ($logoSetting->value[$locale] ?? reset($logoSetting->value)) : $logoSetting->value))
-            : null;
+        $logoUrl = SiteSetting::getValue('logo_light');
+        if (is_array($logoUrl)) {
+            $logoUrl = $logoUrl[$locale] ?? reset($logoUrl);
+        }
+        $logoUrl = $logoUrl ? asset('storage/' . $logoUrl) : null;
 
         $shared = [
             'siteName'      => $siteName,

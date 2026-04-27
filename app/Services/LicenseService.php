@@ -25,8 +25,7 @@ class LicenseService
             }
         }
 
-        $productCode = \App\Models\SiteSetting::where('key', 'license_product_code')->first()?->value 
-            ?? config('license.product_code');
+        $productCode = \App\Models\SiteSetting::getValue('license_product_code', config('license.product_code'));
 
         $payload = [
             'license_key' => $licenseKey,

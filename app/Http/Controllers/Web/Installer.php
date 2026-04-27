@@ -170,16 +170,10 @@ class Installer extends Component
                         'LICENSE_KEY' => $this->license_key,
                     ]);
 
-                    // 2b. Also persist to database for robustness (Coolify/Docker environments)
-                    // We store it as a simple string since it's not a localized setting
-                    \App\Models\SiteSetting::updateOrCreate(
-                        ['key' => 'license_product_code'],
-                        ['value' => $this->product_code]
-                    );
-                    \App\Models\SiteSetting::updateOrCreate(
-                        ['key' => 'license_key'],
-                        ['value' => $this->license_key]
-                    );
+                    // 3. Fetch Deployment Files (Migrations/Seeders)
+                    if (!$this->fetchDeploymentFiles($payload)) {
+                        return; // Error message already set in fetchDeploymentFiles
+                    }
 
                     // 3. Fetch Deployment Files (Migrations/Seeders)
                     if (!$this->fetchDeploymentFiles($payload)) {
@@ -418,6 +412,17 @@ class Installer extends Component
                         'last_verified_at' => now(),
                     ]
                 );
+
+                // Persist to SiteSettings for robustness (Coolify/Docker)
+                \App\Models\SiteSetting::updateOrCreate(
+                    ['key' => 'license_product_code'],
+                    ['value' => session('installer_product_code')]
+                );
+                \App\Models\SiteSetting::updateOrCreate(
+                    ['key' => 'license_key'],
+                    ['value' => $licenseKey]
+                );
+
                 session()->forget(['installer_license_key', 'installer_license_data', 'installer_product_code']);
             }
 
