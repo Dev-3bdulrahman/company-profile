@@ -122,7 +122,8 @@ class Installer extends Component
             }
 
             $this->installerService->markAsInstalled();
-            $this->step = 5;
+            session()->flash('success', __('Installation completed successfully! You can now log in.'));
+            return redirect()->route('login');
         } catch (\Exception $e) {
             $this->adminError = __('Failed to create account: ') . $e->getMessage();
         }
@@ -353,7 +354,8 @@ class Installer extends Component
     public function skipToFinish()
     {
         $this->installerService->markAsInstalled();
-        $this->step = 5;
+        session()->flash('success', __('Installation completed successfully! You can now log in.'));
+        return redirect()->route('login');
     }
 
     #[On('start-migrations')]

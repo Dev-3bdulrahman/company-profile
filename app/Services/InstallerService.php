@@ -26,7 +26,7 @@ class InstallerService
     }
 
     /**
-     * Delete installer files and remove routes.
+     * Delete installer files and remove routes safely.
      */
     public function cleanupInstaller(): void
     {
@@ -35,35 +35,36 @@ class InstallerService
             return;
         }
 
-        // 1. Delete the Livewire Component
-        $componentPath = app_path('Http/Controllers/Web/Installer.php');
-        if (File::exists($componentPath)) {
-            File::delete($componentPath);
-        }
-
-        // 2. Delete the Blade View
-        $viewPath = resource_path('views/livewire/installer.blade.php');
-        if (File::exists($viewPath)) {
-            File::delete($viewPath);
-        }
-
-        // 3. Remove Route from web.php
+        // 1. Remove Route from web.php (Immediate)
         $webRoutesPath = base_path('routes/web.php');
         if (File::exists($webRoutesPath)) {
             $content = File::get($webRoutesPath);
-            // Match the installer route line precisely
             $content = preg_replace('/Route::get\(\'\/install\',.*installer::class\)->name\(\'install\'\);/i', '', $content);
-            // Clean up double newlines
             $content = preg_replace("/\n\n+/", "\n\n", $content);
             File::put($webRoutesPath, trim($content) . "\n");
         }
-        
-        // 4. Clear cache to reflect changes
-        try {
-            \Illuminate\Support\Facades\Artisan::call('route:clear');
-            \Illuminate\Support\Facades\Artisan::call('view:clear');
-            \Illuminate\Support\Facades\Artisan::call('config:clear');
-        } catch (\Exception $e) {}
+
+        // 2. Schedule file deletion AFTER the response is sent
+        app()->terminating(function () {
+            // Delete the Livewire Component
+            $componentPath = app_path('Http/Controllers/Web/Installer.php');
+            if (File::exists($componentPath)) {
+                File::delete($componentPath);
+            }
+
+            // Delete the Blade View
+            $viewPath = resource_path('views/livewire/installer.blade.php');
+            if (File::exists($viewPath)) {
+                File::delete($viewPath);
+            }
+            
+            // Clear cache
+            try {
+                \Illuminate\Support\Facades\Artisan::call('route:clear');
+                \Illuminate\Support\Facades\Artisan::call('view:clear');
+                \Illuminate\Support\Facades\Artisan::call('config:clear');
+            } catch (\Exception $e) {}
+        });
     }
 
     /**
