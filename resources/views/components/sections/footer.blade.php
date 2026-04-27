@@ -1,17 +1,21 @@
-@props(['siteName', 'logoLight', 'footerAbout', 'contactEmail', 'contactPhone', 'address'])
+@props(['siteName', 'logoLight', 'logoDark' => null, 'footerAbout', 'contactEmail', 'contactPhone', 'address'])
 
-<footer class="border-t border-border bg-surface/50 mt-24">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div class="md:col-span-2">
-                <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-3 mb-6 group cursor-pointer">
+<footer class="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 pt-16 pb-8 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <!-- Brand -->
+            <div class="space-y-6">
+                <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-3 group">
                     @if(isset($logoLight) && $logoLight)
-                        <img src="{{ asset('storage/' . $logoLight) }}" alt="{{ $siteName }}" class="h-10 object-contain group-hover:scale-105 transition-transform">
+                        <img src="{{ asset('storage/' . $logoLight) }}" alt="{{ $siteName }}" class="h-10 object-contain group-hover:scale-105 transition-transform {{ $logoDark ? 'dark:hidden' : '' }}">
+                        @if($logoDark)
+                            <img src="{{ asset('storage/' . $logoDark) }}" alt="{{ $siteName }}" class="h-10 object-contain group-hover:scale-105 transition-transform hidden dark:block">
+                        @endif
                     @else
                         <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center glow-primary transition-transform group-hover:scale-110">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
                         </div>
-                        <span class="text-xl font-black tracking-tight leading-none uppercase">{{ $siteName }}</span>
+                        <span class="text-xl font-black tracking-tight leading-none uppercase text-foreground">{{ $siteName }}</span>
                     @endif
                 </a>
                 <p class="text-muted-foreground max-w-md mb-8 leading-relaxed font-medium">{{ $footerAbout }}</p>

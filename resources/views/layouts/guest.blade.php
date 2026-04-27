@@ -39,6 +39,8 @@
     @endif
     @if(!empty($siteSettings['logo_light']))
     <meta property="og:image" content="{{ asset('storage/' . $siteSettings['logo_light']) }}">
+    @elseif(!empty($siteSettings['logo_dark']))
+    <meta property="og:image" content="{{ asset('storage/' . $siteSettings['logo_dark']) }}">
     @endif
 
     <!-- Twitter -->
@@ -50,6 +52,8 @@
     @endif
     @if(!empty($siteSettings['logo_light']))
     <meta property="twitter:image" content="{{ asset('storage/' . $siteSettings['logo_light']) }}">
+    @elseif(!empty($siteSettings['logo_dark']))
+    <meta property="twitter:image" content="{{ asset('storage/' . $siteSettings['logo_dark']) }}">
     @endif
 
     <!-- Structured Data (JSON-LD) -->
@@ -229,7 +233,11 @@
     </button>
     @endif
 
-    <x-sections.header :siteName="$siteName" :logoLight="$logoLight" />
+    <x-sections.header 
+        :siteName="$siteName" 
+        :logoLight="$logoLight" 
+        :logoDark="$siteSettings['logo_dark'] ?? null"
+    />
 
     <main class="min-h-screen {{ !request()->routeIs('home') ? 'pt-24' : '' }}">
         {{ $slot }}
@@ -245,6 +253,7 @@
     <x-sections.footer 
         :siteName="$siteName" 
         :logoLight="$logoLight" 
+        :logoDark="$siteSettings['logo_dark'] ?? null"
         :footerAbout="$footerAbout"
         :contactEmail="$contactEmail"
         :contactPhone="$contactPhone"

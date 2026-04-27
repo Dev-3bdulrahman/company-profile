@@ -1,4 +1,4 @@
-@props(['siteName', 'logoLight', 'scrolled' => false])
+@props(['siteName', 'logoLight', 'logoDark' => null, 'scrolled' => false])
 
 <header x-data="{ 
             mobileMenu: false, 
@@ -13,7 +13,10 @@
             <!-- Logo -->
             <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-3 group cursor-pointer">
                 @if(isset($logoLight) && $logoLight)
-                    <img src="{{ asset('storage/' . $logoLight) }}" alt="{{ $siteName }}" class="h-10 object-contain group-hover:scale-105 transition-transform">
+                    <img src="{{ asset('storage/' . $logoLight) }}" alt="{{ $siteName }}" class="h-10 object-contain group-hover:scale-105 transition-transform {{ $logoDark ? 'dark:hidden' : '' }}">
+                    @if($logoDark)
+                        <img src="{{ asset('storage/' . $logoDark) }}" alt="{{ $siteName }}" class="h-10 object-contain group-hover:scale-105 transition-transform hidden dark:block">
+                    @endif
                 @else
                     <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center glow-primary transition-transform group-hover:scale-110">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
