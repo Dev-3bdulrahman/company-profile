@@ -164,25 +164,22 @@ class Installer extends Component
                     session(['installer_license_data' => $data]);
                     session(['installer_product_code' => $this->product_code]);
 
-                    // 2. Persist to .env IMMEDIATELY
-                    $envPath = base_path('.env');
-                    $content = file_get_contents($envPath);
-                    
-                    // Update Product Code
-                    if (str_contains($content, 'LICENSE_PRODUCT_CODE=')) {
-                        $content = preg_replace('/LICENSE_PRODUCT_CODE=.*/', "LICENSE_PRODUCT_CODE=\"{$this->product_code}\"", $content);
-                    } else {
-                        $content .= "\nLICENSE_PRODUCT_CODE=\"{$this->product_code}\"";
-                    }
+                    // 2. Persist to .env IMMEDIATELY (if possible)
+                    $this->installerService->updateEnv([
+                        'LICENSE_PRODUCT_CODE' => $this->product_code,
+                        'LICENSE_KEY' => $this->license_key,
+                    ]);
 
-                    // Update License Key
-                    if (str_contains($content, 'LICENSE_KEY=')) {
-                        $content = preg_replace('/LICENSE_KEY=.*/', "LICENSE_KEY=\"{$this->license_key}\"", $content);
-                    } else {
-                        $content .= "\nLICENSE_KEY=\"{$this->license_key}\"";
-                    }
-                    
-                    file_put_contents($envPath, $content);
+                    // 2b. Also persist to database for robustness (Coolify/Docker environments)
+                    // We store it as a simple string since it's not a localized setting
+                    \App\Models\SiteSetting::updateOrCreate(
+                        ['key' => 'license_product_code'],
+                        ['value' => $this->product_code]
+                    );
+                    \App\Models\SiteSetting::updateOrCreate(
+                        ['key' => 'license_key'],
+                        ['value' => $this->license_key]
+                    );
 
                     // 3. Fetch Deployment Files (Migrations/Seeders)
                     if (!$this->fetchDeploymentFiles($payload)) {
@@ -301,7 +298,14 @@ class Installer extends Component
 
         if ($test['success']) {
             try {
-                $this->installerService->updateEnv($this->dbConfig);
+                $this->installerService->updateEnv([
+                    'DB_HOST' => $this->dbConfig['host'],
+                    'DB_PORT' => $this->dbConfig['port'],
+                    'DB_DATABASE' => $this->dbConfig['database'],
+                    'DB_USERNAME' => $this->dbConfig['username'],
+                    'DB_PASSWORD' => $this->dbConfig['password'],
+                    'APP_URL' => url('/'),
+                ]);
                 
                 config([
                     'database.connections.mysql.host' => $this->dbConfig['host'],

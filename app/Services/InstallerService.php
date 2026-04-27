@@ -183,34 +183,45 @@ class InstallerService
     }
 
     /**
-     * Update .env file with database configuration.
+     * Update .env file with given configuration.
      */
     public function updateEnv(array $config): bool
     {
         $envPath = base_path('.env');
+        
+        // If .env doesn't exist, try to create it from .env.example
         if (!File::exists($envPath)) {
-            File::copy(base_path('.env.example'), $envPath);
-        }
-
-        $envContent = File::get($envPath);
-
-        $replacements = [
-            'DB_HOST' => $config['host'],
-            'DB_PORT' => $config['port'],
-            'DB_DATABASE' => $config['database'],
-            'DB_USERNAME' => $config['username'],
-            'DB_PASSWORD' => $config['password'],
-            'APP_URL' => url('/'),
-        ];
-
-        foreach ($replacements as $key => $value) {
-            if (preg_match("/^{$key}=/m", $envContent)) {
-                $envContent = preg_replace("/^{$key}=.*/m", "{$key}=\"{$value}\"", $envContent);
+            if (File::exists(base_path('.env.example'))) {
+                File::copy(base_path('.env.example'), $envPath);
             } else {
-                $envContent .= "\n{$key}=\"{$value}\"";
+                // If even .env.example is missing, create an empty .env if possible
+                try {
+                    File::put($envPath, '');
+                } catch (\Exception $e) {
+                    return false;
+                }
             }
         }
 
-        return File::put($envPath, $envContent) !== false;
+        // If still not exists or not writable, skip (e.g. in some containerized environments)
+        if (!File::exists($envPath) || !is_writable($envPath)) {
+            return false;
+        }
+
+        try {
+            $envContent = File::get($envPath);
+
+            foreach ($config as $key => $value) {
+                if (preg_match("/^{$key}=/m", $envContent)) {
+                    $envContent = preg_replace("/^{$key}=.*/m", "{$key}=\"{$value}\"", $envContent);
+                } else {
+                    $envContent .= "\n{$key}=\"{$value}\"";
+                }
+            }
+
+            return File::put($envPath, trim($envContent) . "\n") !== false;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

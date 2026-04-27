@@ -25,9 +25,12 @@ class LicenseService
             }
         }
 
+        $productCode = \App\Models\SiteSetting::where('key', 'license_product_code')->first()?->value 
+            ?? config('license.product_code');
+
         $payload = [
             'license_key' => $licenseKey,
-            'product_code' => config('license.product_code'),
+            'product_code' => $productCode,
             'domain' => request()->getHost(),
             'ip_address' => request()->ip(),
             'machine_fingerprint' => $this->getFingerprint(),
@@ -168,6 +171,12 @@ class LicenseService
                 'expires_at' => isset($data['expires_at']) ? \Carbon\Carbon::parse($data['expires_at']) : null,
                 'grace_until' => isset($data['grace_until']) ? \Carbon\Carbon::parse($data['grace_until']) : null,
             ]
+        );
+
+        // Also persist to SiteSettings for robustness
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'license_key'],
+            ['value' => $key]
         );
     }
 
