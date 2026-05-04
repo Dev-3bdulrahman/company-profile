@@ -141,7 +141,7 @@ class Index extends Component
         $posts        = $this->blogService->listPosts($filters);
         $categories   = $this->blogService->listCategories();
         $tags         = $this->blogService->listTags();
-        $servicesList = Service::where('is_active', true)->orderBy('sort_order')->get();
+        $servicesList = Service::active()->whereNotNull('slug')->orderBy('sort_order')->get();
 
         return view('livewire.admin.blog.index', compact('posts', 'categories', 'tags', 'servicesList'))
             ->title(__('Manage Blog'));

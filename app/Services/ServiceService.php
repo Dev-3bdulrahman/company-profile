@@ -17,7 +17,7 @@ class ServiceService
         $query = Service::orderBy('sort_order', 'asc');
 
         if (!empty($filters['active_only'])) {
-            $query->where('is_active', true)->where('status', 'published');
+            $query->active()->whereNotNull('slug');
         }
 
         if (!empty($filters['search'])) {

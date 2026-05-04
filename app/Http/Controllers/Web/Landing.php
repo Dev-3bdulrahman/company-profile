@@ -18,7 +18,7 @@ class Landing extends Component
     {
         $sections = $homeSectionService->getAll();
 
-        $services   = Service::where('is_active', true)->orderBy('sort_order')->take(6)->get();
+        $services   = Service::active()->whereNotNull('slug')->orderBy('sort_order')->take(6)->get();
         $projects   = PortfolioItem::where('is_active', true)->orderBy('sort_order')->take(4)->get();
         $testimonials = Testimonial::where('is_active', true)->orderBy('sort_order')->get();
         $processSteps = ProcessStep::where('is_active', true)->orderBy('sort_order')->get();

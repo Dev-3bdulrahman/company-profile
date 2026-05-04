@@ -49,7 +49,7 @@ class SitemapService extends BaseInternalService
         }
 
         // 5. Services
-        $services = Service::where('is_active', true)->where('status', 'published')->orderBy('sort_order')->get();
+        $services = Service::active()->whereNotNull('slug')->orderBy('sort_order')->get();
         foreach ($services as $service) {
             $urls[] = $this->formatUrl($baseUrl . '/services/' . $service->slug, $service->updated_at->toAtomString(), 'monthly', '0.8');
         }

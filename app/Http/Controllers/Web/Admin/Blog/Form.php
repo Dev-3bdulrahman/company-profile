@@ -96,7 +96,7 @@ class Form extends Component
         return view('livewire.admin.blog.form', [
             'categories'   => $service->listCategories(),
             'tags'         => $service->listTags(),
-            'servicesList' => Service::where('is_active', true)->orderBy('sort_order')->get(),
+            'servicesList' => Service::active()->whereNotNull('slug')->orderBy('sort_order')->get(),
         ])->title($this->post_id ? __('Edit Post') : __('Add Post'));
     }
 }
