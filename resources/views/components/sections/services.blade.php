@@ -6,7 +6,7 @@
     $eyebrow  = $eyebrow  ?? $sections['services_section']['eyebrow'];
     $title    = $title    ?? $sections['services_section']['title'];
     $subtitle = $subtitle ?? $sections['services_section']['subtitle'];
-    $services = $services ?? \App\Models\Service::where('is_active', true)->orderBy('sort_order')->take(6)->get();
+    $services = $services ?? \App\Models\Service::active()->whereNotNull('slug')->orderBy('sort_order')->take(6)->get();
 @endphp
 
 <section id="services" class="py-24 px-4 sm:px-6 lg:px-8">
